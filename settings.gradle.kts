@@ -15,3 +15,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "Time Table"
 include(":wear")
+include(":phone")
