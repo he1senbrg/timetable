@@ -3,6 +3,7 @@ package com.vte.timetable
 import android.content.Context
 import android.util.Log
 import android.widget.ListView
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -52,6 +53,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
@@ -114,6 +116,7 @@ fun SubmitButton(context: Context,navController: NavController) {
     FloatingActionButton(
         onClick = {
             saveAsJson(context)
+            Toast.makeText(context,"Time table saved!",Toast.LENGTH_SHORT).show()
             navController.popBackStack()
         }
     ) {
@@ -209,7 +212,9 @@ fun AddItemList() {
                 if (items.isNotEmpty()) {
                     items = items.dropLast(1)
                     buttonTexts.removeLast()
-                    timeRangeList.removeLast()
+                    if (timeRangeList.isNotEmpty()){
+                        timeRangeList.removeLast()
+                    }
                 }
             }) {
                 Icon(Icons.Rounded.Delete, "delete")

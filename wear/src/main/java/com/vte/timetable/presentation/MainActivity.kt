@@ -3,7 +3,6 @@ package com.vte.timetable.presentation
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
-import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.AnimatedContentTransitionScope
@@ -13,7 +12,9 @@ import androidx.compose.foundation.focusable
 import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
@@ -25,6 +26,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.rotary.onRotaryScrollEvent
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -33,18 +35,17 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import androidx.wear.compose.foundation.SwipeToDismissBoxState
 import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
 import androidx.wear.compose.foundation.lazy.ScalingLazyColumnDefaults
 import androidx.wear.compose.foundation.lazy.ScalingLazyListState
 import androidx.wear.compose.foundation.lazy.rememberScalingLazyListState
-import androidx.wear.compose.foundation.rememberSwipeToDismissBoxState
+import androidx.wear.compose.material.Button
+import androidx.wear.compose.material.ButtonDefaults
 import androidx.wear.compose.material.Card
 import androidx.wear.compose.material.CardDefaults
+import androidx.wear.compose.material.Icon
 import androidx.wear.compose.material.PositionIndicator
 import androidx.wear.compose.material.Scaffold
-import androidx.wear.compose.material.SwipeToDismissBox
-import androidx.wear.compose.material.SwipeToDismissKeys
 import androidx.wear.compose.material.Text
 import com.google.android.gms.tasks.Tasks
 import com.google.android.gms.wearable.DataClient
@@ -52,6 +53,7 @@ import com.google.android.gms.wearable.DataEvent
 import com.google.android.gms.wearable.DataEventBuffer
 import com.google.android.gms.wearable.DataMapItem
 import com.google.android.gms.wearable.Wearable
+import com.vte.timetable.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -168,6 +170,29 @@ class MainActivity : AppCompatActivity(), DataClient.OnDataChangedListener {
                         TextForTableDay(listOfDays.getString(it))
                     }
                 }
+            }
+            item {
+                Button(
+                    onClick = {
+                        val nodeClient = Wearable.getNodeClient(this@MainActivity)
+                        val messageClient = Wearable.getMessageClient(this@MainActivity)
+
+                        nodeClient.connectedNodes.addOnSuccessListener { node ->
+                            val nodeId = node[node.lastIndex].id
+                            Log.d(TAG, "Sending message to node: $nodeId")
+                            val path = "/open-phone-app"
+                            val message = "Open the phone app"
+                            messageClient.sendMessage(nodeId, path, message.toByteArray())
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth(0.5f)
+                        .padding(16.dp),
+                    colors = ButtonDefaults.secondaryButtonColors(backgroundColor = Color.Transparent),
+                ) {
+                    Icon(painterResource(id = R.drawable.rounded_open_in_phone_24), contentDescription = "Open Phone App", tint = Color.White)
+                }
+
             }
         }
         LaunchedEffect(Unit) { focusRequester.requestFocus() }
@@ -387,7 +412,6 @@ fun saveConfigToFile(context: Context, fileName: String, jsonData: JSONObject) {
         e.printStackTrace()
     }
 }
-
 
 
 fun readConfigFromFile(context: Context, fileName: String): JSONObject? {
