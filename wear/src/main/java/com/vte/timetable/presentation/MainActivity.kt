@@ -44,6 +44,7 @@ import androidx.wear.compose.material.ButtonDefaults
 import androidx.wear.compose.material.Card
 import androidx.wear.compose.material.CardDefaults
 import androidx.wear.compose.material.Icon
+import androidx.wear.compose.material.OutlinedButton
 import androidx.wear.compose.material.PositionIndicator
 import androidx.wear.compose.material.Scaffold
 import androidx.wear.compose.material.Text
@@ -178,16 +179,19 @@ class MainActivity : AppCompatActivity(), DataClient.OnDataChangedListener {
                         val messageClient = Wearable.getMessageClient(this@MainActivity)
 
                         nodeClient.connectedNodes.addOnSuccessListener { node ->
-                            val nodeId = node[node.lastIndex].id
-                            Log.d(TAG, "Sending message to node: $nodeId")
-                            val path = "/open-phone-app"
-                            val message = "Open the phone app"
-                            messageClient.sendMessage(nodeId, path, message.toByteArray())
+                            if (node.isNotEmpty()) {
+                                val nodeId = node[node.lastIndex].id
+                                Log.d(TAG, "Sending message to node: $nodeId")
+                                val path = "/open-phone-app"
+                                val message = "Open the phone app"
+                                messageClient.sendMessage(nodeId, path, message.toByteArray())
+                            }
                         }
                     },
                     modifier = Modifier
                         .fillMaxWidth(0.5f)
-                        .padding(16.dp),
+                        .padding(16.dp)
+                        .border(1.dp, Color.DarkGray, shape = RoundedCornerShape(20.dp)),
                     colors = ButtonDefaults.secondaryButtonColors(backgroundColor = Color.Transparent),
                 ) {
                     Icon(painterResource(id = R.drawable.rounded_open_in_phone_24), contentDescription = "Open Phone App", tint = Color.White)
@@ -199,7 +203,7 @@ class MainActivity : AppCompatActivity(), DataClient.OnDataChangedListener {
     }
 
     @Composable
-    fun ListViewDay(currentDay: String,periodList: JSONArray, scalingLazyListState: ScalingLazyListState ) {
+    fun ListViewDay(currentDay: String,periodList: JSONArray, scalingLazyListState: ScalingLazyListState ,navController: NavController) {
         val focusRequester = remember{ FocusRequester() }
         val coroutineScope = rememberCoroutineScope()
 
@@ -240,6 +244,21 @@ class MainActivity : AppCompatActivity(), DataClient.OnDataChangedListener {
                     TextForTablePeriod(periodList.get(it).toString(),"${listOfHours.get(it)} - ${listOfHours.get(it+1)}")
                 }
             }
+            item {
+                Button(
+                    onClick = {
+                        navController.popBackStack()
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth(0.5f)
+                        .padding(16.dp)
+                        .border(1.dp, Color.DarkGray, shape = RoundedCornerShape(20.dp)),
+                    colors = ButtonDefaults.secondaryButtonColors(backgroundColor = Color.Transparent),
+                ) {
+                    Icon(painterResource(id = R.drawable.round_arrow_back_ios_24), contentDescription = "Back", tint = Color.White)
+                }
+
+            }
         }
         LaunchedEffect(Unit) {
             focusRequester.requestFocus()
@@ -257,7 +276,7 @@ class MainActivity : AppCompatActivity(), DataClient.OnDataChangedListener {
             vignette = {},
             positionIndicator = {PositionIndicator(scalingLazyListState = scalingLazyListState)}
         ) {
-            ListViewDay(currentDay,jsonFromListTimeTable,scalingLazyListState)
+            ListViewDay(currentDay,jsonFromListTimeTable,scalingLazyListState,navController)
         }
     }
 

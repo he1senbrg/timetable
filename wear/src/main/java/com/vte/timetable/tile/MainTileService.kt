@@ -99,6 +99,7 @@ private fun tileLayout(context: Context): LayoutElementBuilders.LayoutElement {
                         .setPadding(
                             ModifiersBuilders.Padding.Builder()
                                 .setAll(DimensionBuilders.dp(5f))
+                                .setStart(DimensionBuilders.dp(10f))
                                 .build()
                         )
                     .setBackground(
@@ -117,7 +118,7 @@ private fun tileLayout(context: Context): LayoutElementBuilders.LayoutElement {
                                 .setFontStyle(
                                     LayoutElementBuilders.FontStyle.Builder()
                                         .setItalic(true)
-                                        .setSize(DimensionBuilders.sp(7f))
+                                        .setSize(DimensionBuilders.sp(8f))
                                         .build()
                                 )
                                 .build()
@@ -210,6 +211,7 @@ private fun tileLayout(context: Context): LayoutElementBuilders.LayoutElement {
                         .setPadding(
                             ModifiersBuilders.Padding.Builder()
                                 .setAll(DimensionBuilders.dp(5f))
+                                .setStart(DimensionBuilders.dp(10f))
                                 .build()
                         )
                         .setBackground(
@@ -228,7 +230,7 @@ private fun tileLayout(context: Context): LayoutElementBuilders.LayoutElement {
                                 .setFontStyle(
                                     LayoutElementBuilders.FontStyle.Builder()
                                         .setItalic(true)
-                                        .setSize(DimensionBuilders.sp(7f))
+                                        .setSize(DimensionBuilders.sp(8f))
                                         .build()
                                 )
                                 .build()
