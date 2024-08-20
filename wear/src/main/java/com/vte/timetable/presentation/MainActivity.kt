@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
@@ -35,10 +36,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import androidx.wear.compose.foundation.CurvedModifier
+import androidx.wear.compose.foundation.CurvedTextStyle
 import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
 import androidx.wear.compose.foundation.lazy.ScalingLazyColumnDefaults
 import androidx.wear.compose.foundation.lazy.ScalingLazyListState
 import androidx.wear.compose.foundation.lazy.rememberScalingLazyListState
+import androidx.wear.compose.foundation.padding
 import androidx.wear.compose.material.Button
 import androidx.wear.compose.material.ButtonDefaults
 import androidx.wear.compose.material.Card
@@ -48,6 +52,10 @@ import androidx.wear.compose.material.OutlinedButton
 import androidx.wear.compose.material.PositionIndicator
 import androidx.wear.compose.material.Scaffold
 import androidx.wear.compose.material.Text
+import androidx.wear.compose.material.TimeText
+import androidx.wear.compose.material.TimeTextDefaults
+import androidx.wear.compose.material.TimeTextDefaults.CurvedTextSeparator
+import androidx.wear.compose.material.curvedText
 import com.google.android.gms.tasks.Tasks
 import com.google.android.gms.wearable.DataClient
 import com.google.android.gms.wearable.DataEvent
@@ -55,6 +63,8 @@ import com.google.android.gms.wearable.DataEventBuffer
 import com.google.android.gms.wearable.DataMapItem
 import com.google.android.gms.wearable.Wearable
 import com.vte.timetable.R
+import com.vte.timetable.tile.getCurrentPeriod
+import com.vte.timetable.tile.getNextPeriod
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -64,7 +74,9 @@ import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.IOException
+import java.time.LocalDate
 import java.time.LocalTime
+import java.util.Date
 
 class MainActivity : AppCompatActivity(), DataClient.OnDataChangedListener {
 
@@ -165,12 +177,16 @@ class MainActivity : AppCompatActivity(), DataClient.OnDataChangedListener {
             Log.d(TAG, "List of days: $listOfDays")
             if (listOfDays != null) {
                 items(listOfDays.length()) {
+                    var pColor = Color(0xff1E1F22)
+                    if (LocalDate.now().dayOfWeek.toString() == listOfDays.getString(it).uppercase()) {
+                        pColor = Color.DarkGray
+                    }
                     val currentCourses = mapDaysToCourse(listOfDays.getString(it),this@MainActivity).toString()
                     Card(
                         onClick = { navController.navigate("days?day=${listOfDays.get(it)}&course=$currentCourses") },
                         modifier = Modifier
                             .height(50.dp)
-                            .border(1.dp, Color.DarkGray, shape = RoundedCornerShape(20.dp)),
+                            .border(1.dp, pColor, shape = RoundedCornerShape(20.dp)),
                         backgroundPainter = CardDefaults.cardBackgroundPainter(startBackgroundColor = Color.Black, endBackgroundColor = Color.Black)
                     ) {
                         TextForTableDay(listOfDays.getString(it))
@@ -197,7 +213,7 @@ class MainActivity : AppCompatActivity(), DataClient.OnDataChangedListener {
                     modifier = Modifier
                         .fillMaxWidth(0.5f)
                         .padding(16.dp)
-                        .border(1.dp, Color.DarkGray, shape = RoundedCornerShape(20.dp)),
+                        .border(1.dp, Color(0xff1E1F22), shape = RoundedCornerShape(20.dp)),
                     colors = ButtonDefaults.secondaryButtonColors(backgroundColor = Color.Transparent),
                 ) {
                     Icon(painterResource(id = R.drawable.rounded_open_in_phone_24), contentDescription = "Open Phone App", tint = Color.White)
@@ -214,7 +230,7 @@ class MainActivity : AppCompatActivity(), DataClient.OnDataChangedListener {
         val coroutineScope = rememberCoroutineScope()
 
         val timeTableJson = readConfigFromFile(this, "time-table.json")
-        val listOfHours = timeTableJson?.getJSONArray("hours")?:JSONArray(listOf("9.00","9.50","10.40","11.40","12.30","1.20","2.10","3.00","3.10","4.00","4.50"))
+        val listOfHours = timeTableJson?.getJSONArray("hours")?:JSONArray(listOf("0.00","0.00"))
         ScalingLazyColumn(
             modifier = Modifier
                 .wrapContentSize()
@@ -240,14 +256,18 @@ class MainActivity : AppCompatActivity(), DataClient.OnDataChangedListener {
                 TextForTableDay(currentDay)
             }
             items(periodList.length()) {
+                var pColor = Color(0xff1E1F22)
+                if (getCurrentPeriod(this@MainActivity) == periodList.get(it).toString()) {
+                    pColor = Color.DarkGray
+                }
                 Card(
                     onClick = {},
+                    enabled = false,
                     modifier = Modifier
-                        .height(70.dp)
-                        .border(1.dp, Color.DarkGray, shape = RoundedCornerShape(20.dp)),
+                        .border(1.dp, pColor, shape = RoundedCornerShape(20.dp))
+                        .height(70.dp),
                     backgroundPainter = CardDefaults.cardBackgroundPainter(startBackgroundColor = Color.Black, endBackgroundColor = Color.Black)
                 ){
-                    Log.d(TAG, "Period: ${listOfHours.toString()}")
                     TextForTablePeriod(periodList.get(it).toString(),"${listOfHours.get(it)} - ${listOfHours.get(it+1)}")
                 }
             }
@@ -259,7 +279,7 @@ class MainActivity : AppCompatActivity(), DataClient.OnDataChangedListener {
                     modifier = Modifier
                         .fillMaxWidth(0.5f)
                         .padding(16.dp)
-                        .border(1.dp, Color.DarkGray, shape = RoundedCornerShape(20.dp)),
+                        .border(1.dp, Color(0xff1E1F22), shape = RoundedCornerShape(20.dp)),
                     colors = ButtonDefaults.secondaryButtonColors(backgroundColor = Color.Transparent),
                 ) {
                     Icon(painterResource(id = R.drawable.round_arrow_back_ios_24), contentDescription = "Back", tint = Color.White)
@@ -279,7 +299,7 @@ class MainActivity : AppCompatActivity(), DataClient.OnDataChangedListener {
 
         Scaffold(
             modifier = Modifier.fillMaxSize(),
-            timeText = { Text(text = "Time") },
+            timeText = { TimeText() },
             vignette = {},
             positionIndicator = {PositionIndicator(scalingLazyListState = scalingLazyListState)}
         ) {
@@ -295,10 +315,9 @@ class MainActivity : AppCompatActivity(), DataClient.OnDataChangedListener {
 
         Scaffold(
             modifier = Modifier.fillMaxSize(),
-            timeText = {},
+            timeText = { TimeText() },
             vignette = {},
-            positionIndicator = {PositionIndicator(scalingLazyListState = scalingLazyListState)
-            }
+            positionIndicator = {PositionIndicator(scalingLazyListState = scalingLazyListState) }
         ) {
             ListViewT(navController = navController,scalingLazyListState)
         }
