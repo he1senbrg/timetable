@@ -64,6 +64,7 @@ import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.IOException
+import java.time.LocalTime
 
 class MainActivity : AppCompatActivity(), DataClient.OnDataChangedListener {
 
@@ -118,13 +119,17 @@ class MainActivity : AppCompatActivity(), DataClient.OnDataChangedListener {
 
     @Composable
     fun TextForTableDay(dayText: String){
-        Text(text = dayText, fontSize = 20.sp)
+        Text(text = dayText, fontSize = 22.sp)
     }
 
     @Composable
     fun TextForTablePeriod(tableText: String, subText: String){
-        Text(text = tableText, fontSize = 20.sp)
-        Text(text = subText, fontSize = 16.sp)
+        Log.d(TAG, "Table Text: $tableText, Sub Text: $subText")
+        val subTextStart = LocalTime.parse(subText.split("-")[0].replace(" ","")).format(java.time.format.DateTimeFormatter.ofPattern("hh:mm a"))
+
+        val subTextEnd = LocalTime.parse(subText.split("-")[1].replace(" ","")).format(java.time.format.DateTimeFormatter.ofPattern("hh:mm a"))
+        Text(text = tableText, fontSize = 22.sp)
+        Text(text = "$subTextStart - $subTextEnd", fontSize = 14.sp, color = Color(0xFFA0A0A0))
     }
 
     @Composable
@@ -180,6 +185,7 @@ class MainActivity : AppCompatActivity(), DataClient.OnDataChangedListener {
 
                         nodeClient.connectedNodes.addOnSuccessListener { node ->
                             if (node.isNotEmpty()) {
+                                Log.d(TAG, "Sending message to node: ${node}")
                                 val nodeId = node[node.lastIndex].id
                                 Log.d(TAG, "Sending message to node: $nodeId")
                                 val path = "/open-phone-app"
@@ -241,6 +247,7 @@ class MainActivity : AppCompatActivity(), DataClient.OnDataChangedListener {
                         .border(1.dp, Color.DarkGray, shape = RoundedCornerShape(20.dp)),
                     backgroundPainter = CardDefaults.cardBackgroundPainter(startBackgroundColor = Color.Black, endBackgroundColor = Color.Black)
                 ){
+                    Log.d(TAG, "Period: ${listOfHours.toString()}")
                     TextForTablePeriod(periodList.get(it).toString(),"${listOfHours.get(it)} - ${listOfHours.get(it+1)}")
                 }
             }

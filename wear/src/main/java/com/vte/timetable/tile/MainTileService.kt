@@ -21,7 +21,9 @@ import androidx.wear.protolayout.material.Button
 import androidx.wear.protolayout.material.ButtonColors
 import androidx.wear.protolayout.material.ButtonDefaults
 import androidx.wear.protolayout.material.Chip
+import androidx.wear.protolayout.material.ChipColors
 import androidx.wear.protolayout.material.ChipDefaults
+import androidx.wear.protolayout.material.Colors
 import androidx.wear.protolayout.material.CompactChip
 import androidx.wear.protolayout.material.Text
 import androidx.wear.protolayout.material.layouts.MultiButtonLayout
@@ -87,13 +89,13 @@ private fun tileLayout(context: Context): LayoutElementBuilders.LayoutElement {
             LayoutElementBuilders.Box.Builder()
                 .setHorizontalAlignment(LayoutElementBuilders.HORIZONTAL_ALIGN_LEFT)
                 .setWidth(DimensionBuilders.dp(170f))
-                .setHeight(DimensionBuilders.dp(50f))
+                .setHeight(DimensionBuilders.dp(55f))
                 .setModifiers(
                     Modifiers.Builder()
                         .setBorder(
                             ModifiersBuilders.Border.Builder()
                                 .setWidth(DimensionBuilders.dp(0f))
-                                .setColor(ColorBuilders.argb(0xffffffff.toInt()))
+                                .setColor(ColorBuilders.argb(0xff383838.toInt())) //0xffffffff
                                 .build()
                         )
                         .setPadding(
@@ -104,7 +106,7 @@ private fun tileLayout(context: Context): LayoutElementBuilders.LayoutElement {
                         )
                     .setBackground(
                         ModifiersBuilders.Background.Builder()
-                            .setColor(ColorBuilders.argb(0xff0E1013.toInt()))
+                            .setColor(ColorBuilders.argb(0xff000000.toInt())) //0xff0E1013
                             .setCorner(Corner.Builder().setRadius(DimensionBuilders.dp(15f)).build())
                             .build()
                     )
@@ -117,8 +119,11 @@ private fun tileLayout(context: Context): LayoutElementBuilders.LayoutElement {
                                 .setText("Now")
                                 .setFontStyle(
                                     LayoutElementBuilders.FontStyle.Builder()
-                                        .setItalic(true)
-                                        .setSize(DimensionBuilders.sp(8f))
+                                        //.setItalic(true)
+                                        .setColor(
+                                            ColorBuilders.argb(0xffc5c5c5.toInt())
+                                        )
+                                        .setSize(DimensionBuilders.sp(10f))
                                         .build()
                                 )
                                 .build()
@@ -142,7 +147,6 @@ private fun tileLayout(context: Context): LayoutElementBuilders.LayoutElement {
                                 .setText(getCurrentPeriod(context))
                                 .setFontStyle(
                                     LayoutElementBuilders.FontStyle.Builder()
-                                        .setItalic(true)
                                         .setSize(DimensionBuilders.sp(25f))
                                         .build()
                                 )
@@ -199,13 +203,13 @@ private fun tileLayout(context: Context): LayoutElementBuilders.LayoutElement {
             LayoutElementBuilders.Box.Builder()
                 .setHorizontalAlignment(LayoutElementBuilders.HORIZONTAL_ALIGN_LEFT)
                 .setWidth(DimensionBuilders.dp(170f))
-                .setHeight(DimensionBuilders.dp(50f))
+                .setHeight(DimensionBuilders.dp(55f))
                 .setModifiers(
                     Modifiers.Builder()
                         .setBorder(
                             ModifiersBuilders.Border.Builder()
                                 .setWidth(DimensionBuilders.dp(0f))
-                                .setColor(ColorBuilders.argb(0xffffffff.toInt()))
+                                .setColor(ColorBuilders.argb(0xff383838.toInt())) // 0xffffffff
                                 .build()
                         )
                         .setPadding(
@@ -216,7 +220,7 @@ private fun tileLayout(context: Context): LayoutElementBuilders.LayoutElement {
                         )
                         .setBackground(
                             ModifiersBuilders.Background.Builder()
-                                .setColor(ColorBuilders.argb(0xff0E1013.toInt()))
+                                .setColor(ColorBuilders.argb(0xff000000.toInt())) //0xff0E1013
                                 .setCorner(Corner.Builder().setRadius(DimensionBuilders.dp(15f)).build())
                                 .build()
                         )
@@ -226,11 +230,14 @@ private fun tileLayout(context: Context): LayoutElementBuilders.LayoutElement {
                     LayoutElementBuilders.Column.Builder()
                         .addContent(
                             LayoutElementBuilders.Text.Builder()
-                                .setText("Next")
+                                .setText("Next") //c2c4c4
                                 .setFontStyle(
                                     LayoutElementBuilders.FontStyle.Builder()
-                                        .setItalic(true)
-                                        .setSize(DimensionBuilders.sp(8f))
+                                        //.setItalic(true)
+                                        .setColor(
+                                            ColorBuilders.argb(0xffc5c5c5.toInt())
+                                        )
+                                        .setSize(DimensionBuilders.sp(10f))
                                         .build()
                                 )
                                 .build()
@@ -254,7 +261,6 @@ private fun tileLayout(context: Context): LayoutElementBuilders.LayoutElement {
                                 .setText(getNextPeriod(context))
                                 .setFontStyle(
                                     LayoutElementBuilders.FontStyle.Builder()
-                                        .setItalic(true)
                                         .setSize(DimensionBuilders.sp(25f))
                                         .build()
                                 )
@@ -271,6 +277,16 @@ private fun tileLayout(context: Context): LayoutElementBuilders.LayoutElement {
             PrimaryLayout.Builder(emptyPar)
             .setPrimaryChipContent(
                 CompactChip.Builder(context, "Refresh",  emptyClickable, emptyPar)
+                    .setChipColors(
+                        ChipColors.secondaryChipColors(
+                            Colors(
+                                0xff2f2f2f.toInt(),
+                                0xffffffff.toInt(),
+                                0xff2f2f2f.toInt(),
+                                0xffffffff.toInt()
+                            )
+                        )
+                    )
                     .build()
             )
             .build()
@@ -333,7 +349,11 @@ fun getCurrentPeriod(context: Context): String {
 
     if (periodMap[currentDay]?.get(0)?.toString() == "Nothing!") {
         return "Nothing!"
-    } else {
+    }
+    else if (cPeriod == -1) {
+        return "Nothing!"
+    }
+    else {
         if (cPeriod >= periodMap[currentDay]?.length()!!) {
             return "Nothing!"
         } else {
@@ -370,12 +390,16 @@ fun getNextPeriod(context: Context): String {
 
     val nextPeriod = when (cPeriod) {
         in 0..classes.length() -> cPeriod + 1
-        else -> 0
+        else -> -1
     }
 
     if (periodMap[currentDay]?.get(0)?.toString() == "Nothing!") {
         return "Nothing!"
-    } else {
+    }
+    else if (nextPeriod == -1) {
+        return "Nothing!"
+    }
+    else {
         if (nextPeriod >= periodMap[currentDay]?.length()!!) {
             return "Nothing!"
         } else {
@@ -434,10 +458,13 @@ fun getPeriodIndex(context: Context): Int {
 
     for ((range, index) in periods) {
 
+        Log.d("Current Time",LocalTime.now().toString())
+        Log.d("Start Time",range.first.toString())
+        Log.d("End Time",range.second.toString())
         if (isCurrentTimeInRange(range.first, range.second)) {
             return index
         }
     }
 
-    return 0
+    return -1
 }

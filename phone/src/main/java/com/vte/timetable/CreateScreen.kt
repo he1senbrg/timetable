@@ -241,11 +241,19 @@ fun AddItemList() {
                 showDialExample = false
             },
             onConfirm = { time ->
-                selectedTime = time
+                var rawTimeStart = time.split(":")[0]
+                var rawTimeEnd = time.split(":")[1]
                 val index = items.size - 1
                 if (index >= 0 && index < buttonTexts.size) {
                     buttonTexts[index] = time
                 }
+                if (rawTimeStart.length == 1) {
+                    rawTimeStart = "0$rawTimeStart"
+                }
+                if (rawTimeEnd.length == 1) {
+                    rawTimeEnd = "0$rawTimeEnd"
+                }
+                timeRangeList.add("$rawTimeStart:$rawTimeEnd")
                 showDialExample = false
             }
         )
@@ -290,7 +298,7 @@ fun RangePicker(
                     }
                     Button(onClick = {
                         val selectedTime = "${timePickerState.hour}:${timePickerState.minute}"
-                        timeRangeList.add(selectedTime)
+                        // timeRangeList.add(selectedTime)
                         Log.d("smth", "Above list add")
                         Log.d("TimeRangeList", timeRangeList.toList().toString())
                         onConfirm(selectedTime)
@@ -369,5 +377,7 @@ fun saveAsJson(context: Context) {
     val jsonData = readConfigFromFile(context = context, "time-table.json")
     Log.d("tableJSON", jsonData.toString())
     sendMessageToWear(context)
+    finalDayList = mutableStateListOf()
+    timeRangeList = mutableStateListOf()
     Log.d("CreateScreenToWear", "Data sent to wear")
 }
