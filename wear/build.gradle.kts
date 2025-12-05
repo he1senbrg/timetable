@@ -43,7 +43,10 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            if (System.getenv("KEYSTORE_FILE") != null) {
+            if (System.getenv("KEYSTORE_FILE") != null && 
+                System.getenv("KEYSTORE_PASSWORD") != null &&
+                System.getenv("KEY_ALIAS") != null && 
+                System.getenv("KEY_PASSWORD") != null) {
                 signingConfig = signingConfigs.getByName("release")
             }
         }
