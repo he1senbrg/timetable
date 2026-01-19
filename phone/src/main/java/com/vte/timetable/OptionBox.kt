@@ -17,15 +17,12 @@ import androidx.compose.ui.Modifier
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun OptionBox(options:List<String>,boxLabel:String,onValueChange: (String) -> Unit) {
+fun OptionBox(options: List<String>, boxLabel: String, onValueChange: (String) -> Unit) {
     var expanded by remember { mutableStateOf(false) }
     var text by remember { mutableStateOf(options[0]) }
 
-    ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = it}) {
+    ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = it }) {
         OutlinedTextField(
-            // The `menuAnchor` modifier must be passed to the text field to handle
-            // expanding/collapsing the menu on click. A read-only text field has
-            // the anchor type `PrimaryNotEditable`.
             modifier = Modifier.menuAnchor(),
             value = text,
             onValueChange = {},

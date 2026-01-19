@@ -11,8 +11,16 @@ android {
         applicationId = "com.vte.timetable"
         minSdk = 30
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+
+        val tag = System.getenv("GITHUB_REF_NAME")
+
+        versionName = tag ?: "dev"
+
+        versionCode = tag
+            ?.removePrefix("v")
+            ?.replace(".", "")
+            ?.toIntOrNull()
+            ?: 1
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -20,9 +28,22 @@ android {
         }
     }
 
+    signingConfigs {
+        create("release") {
+            val keystorePath = System.getenv("KEYSTORE_FILE")
+            if (keystorePath != null) {
+                storeFile = rootProject.file(keystorePath)
+                storePassword = System.getenv("KEYSTORE_PASSWORD")
+                keyAlias = System.getenv("KEY_ALIAS")
+                keyPassword = System.getenv("KEY_PASSWORD")
+            }
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = true
+            signingConfig = signingConfigs.getByName("release")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"

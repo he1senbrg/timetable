@@ -1,13 +1,29 @@
-# Time Table App for WearOS
-## Overview
-This WearOS app serves as a convenient tool for students to access their course schedules, ensuring they stay organized and up-to-date with their classes.
+# Time Table
+
+A native Android application for managing class schedules. Access your timetable on your phone or directly from your Wear OS device.
+
+## Screenshots
+
+### Phone
+| Home | Edit |
+|------|------|
+| ![Home](images/home.png) | ![Edit](images/edit.png) |
+
+### Wear OS
+| Home | Day | Tile |
+|------|----------|------|
+| ![Watch Home](images/watch_home.png) | ![Watch Day](images/watch_day.png) | ![Watch Tile](images/watch_tile.png) |
 
 ## Features
-- **WearOS Compatibility**: Seamlessly integrated with WearOS devices for on-the-go access.
-- **Tile Support**: Now tiles are included giving you access to latest class info.
 
-## Contributors
-- [Vishnu Tejas](https://github.com/vishnutejase)
+### Phone
+- View daily and weekly class schedules
+- Native Android interface
+
+### Wear OS
+- Tile support for quick schedule access
+- Optimized for small screens
 
 ## License
-This project is licensed under the [MIT License](/LICENSE.txt).
+
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
